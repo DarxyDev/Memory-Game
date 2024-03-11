@@ -13,7 +13,6 @@ function App() {
       setState({ cardData: cardData });
     })()
   }, [])
-
   return (
     <>
       {state.cardData.length === 0 ? 
