@@ -1,68 +1,48 @@
-import Card from "./Card"
 import { useState } from "react"
 
-export default function GameWindow({ cardData }) {
+export default function GameWindow({ cardData, cards }) {
     const [state, setState] = useState({
-        selectedCardIDs: [],
+        usedCardIDs: [],
         totalGames: 0,
         highScore: 0,
     })
-    const randomIndex = Math.floor(Math.random() * cardData.length)
-    const wasUsedOnClick = (e, reverseEffect = false) => {
-        const cardID = cardData[randomIndex].id;
-        const cardUsed = state.selectedCardIDs.includes(cardID);
-        let newState;
-        switch(true){
-            //game over
-            case cardUsed && !reverseEffect:
-            case !cardUsed && reverseEffect:
-                newState = {
-                    ...state,
-                    totalGames: ++state.totalGames,
-                    highScore: state.highScore > state.selectedCardIDs.length ?
-                        state.highScore :
-                        state.selectedCardIDs.length,
-                    selectedCardIDs: []
-                }
-                break;
-            //continue playing
-            case cardUsed && reverseEffect:
-            case !cardUsed && !reverseEffect:
-                newState = {
-                    ...state,
-                    selectedCardIDs: [...state.selectedCardIDs, cardID]
-                }
-                break;
-            default: newState = { ...state};
-        }
-        setState(newState);
+
+    const randomIndex = Math.floor(Math.random() * cards.length)
+    const currentID = cardData[randomIndex].id;
+    const cardIsUsed = state.usedCardIDs.includes(currentID);
+    function gameOver() {
+        setState({
+            ...state,
+            totalGames: ++state.totalGames,
+            highScore: state.highScore > state.usedCardIDs.length ?
+                state.highScore :
+                state.usedCardIDs.length,
+            usedCardIDs: []
+        })
     }
-
-
+    function nextTurn() {
+        setState({
+            ...state,
+            usedCardIDs: [...state.usedCardIDs, currentID]
+        })
+    }
     return (
         <div className='GameWindow'>
             <div className='GameWindow-header'>
-                <h4>Current Score: {state.selectedCardIDs.length}</h4>
+                <h4>Current Score: {state.usedCardIDs.length}</h4>
                 <h4>High Score: {state.highScore}</h4>
             </div>
-            {cardFromIndex(randomIndex)}
-            <button onClick={(e)=>{wasUsedOnClick(e,true)}}>Seen it</button>
+            {cardIsUsed ?
+                <>
+                    <div onClick={gameOver}>{cards[randomIndex]}</div>
+                    <button onClick={nextTurn}>Seen it</button>
+                </> :
+                <>
+                    <div onClick={nextTurn}>{cards[randomIndex]}</div>
+                    {state.usedCardIDs.length <= 0 ? null :<button onClick={gameOver}>Seen it</button>}
+                </>
+            }
         </div>
     )
 
-    function cardFromIndex(index) {
-        const data = { ...cardData[index] };
-        if (data.breeds.length <= 0) data.breeds[0] = 'Unknown';
-        return <Card
-            key={data.id}
-            imageUrl={data.url}
-            name={data.breeds[0].name}
-            onClick={wasUsedOnClick}
-        />
-    }
 }
-
-
-/*
-
-                    */
