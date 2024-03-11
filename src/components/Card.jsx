@@ -1,6 +1,6 @@
 export default function Card({ imageUrl, name, onClick }) {
     return (
-        <div className='Card' onClick={onClick}>
+        <div className='Card' onClick={onClick || function(){}}>
             <img
                 src={imageUrl}
                 alt={'Cat picture: ' + name}
