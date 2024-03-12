@@ -5,11 +5,10 @@ export default function GameWindow({ cardData, cards }) {
         usedCardIDs: [],
         totalGames: 0,
         highScore: 0,
+        cardIndex: 0,
+        displayInfo: false,
     })
-    console.log('rendering')
-    const randomIndex = Math.floor(Math.random() * cards.length)
-    const currentID = cardData[randomIndex].id;
-    
+    const currentID = cardData[state.cardIndex].id;
     function gameOver() {
         setState({
             ...state,
@@ -17,13 +16,15 @@ export default function GameWindow({ cardData, cards }) {
             highScore: state.highScore > state.usedCardIDs.length ?
                 state.highScore :
                 state.usedCardIDs.length,
-            usedCardIDs: []
+            usedCardIDs: [],
+            cardIndex: Math.floor(Math.random() * cards.length),
         })
     }
     function nextTurn() {
         setState({
             ...state,
-            usedCardIDs: [...state.usedCardIDs, currentID]
+            usedCardIDs: [...state.usedCardIDs, currentID],
+            cardIndex: Math.floor(Math.random() * cards.length),
         })
     }
     return (
@@ -34,14 +35,29 @@ export default function GameWindow({ cardData, cards }) {
             </div>
             {state.usedCardIDs.includes(currentID) ?
                 <>
-                    <div onClick={gameOver}>{cards[randomIndex]}</div>
+                    <div onClick={gameOver}>{cards[state.cardIndex]}</div>
                     <button onClick={nextTurn}>Seen it</button>
                 </> :
                 <>
-                    <div onClick={nextTurn}>{cards[randomIndex]}</div>
-                    {state.usedCardIDs.length <= 0 ? null :<button onClick={gameOver}>Seen it</button>}
+                    <div onClick={nextTurn}>{cards[state.cardIndex]}</div>
+                    {state.usedCardIDs.length <= 0 ? null : <button onClick={gameOver}>Seen it</button>}
                 </>
             }
+            <button onClick={() => { setState({ ...state, displayInfo: !state.displayInfo }) }}>
+                {state.displayInfo ? 'Hide info' : 'Info dump'}
+            </button>
+            {state.displayInfo ?
+                <div>
+                    {cardData[state.cardIndex]
+                        .breeds.map((breed) => {
+                            return <div key={'info' + breed.id}>
+                                {Object.entries(breed).map(([k,v])=>{
+                                return <div key={'key' + k}>{k + ' ' + v.toString()}</div>
+                            })}
+                            </div>
+                        })}
+                </div> :
+                null}
         </div>
     )
 
