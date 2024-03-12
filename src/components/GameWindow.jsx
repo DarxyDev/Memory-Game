@@ -6,10 +6,10 @@ export default function GameWindow({ cardData, cards }) {
         totalGames: 0,
         highScore: 0,
     })
-
+    console.log('rendering')
     const randomIndex = Math.floor(Math.random() * cards.length)
     const currentID = cardData[randomIndex].id;
-    const cardIsUsed = state.usedCardIDs.includes(currentID);
+    
     function gameOver() {
         setState({
             ...state,
@@ -32,7 +32,7 @@ export default function GameWindow({ cardData, cards }) {
                 <h4>Current Score: {state.usedCardIDs.length}</h4>
                 <h4>High Score: {state.highScore}</h4>
             </div>
-            {cardIsUsed ?
+            {state.usedCardIDs.includes(currentID) ?
                 <>
                     <div onClick={gameOver}>{cards[randomIndex]}</div>
                     <button onClick={nextTurn}>Seen it</button>

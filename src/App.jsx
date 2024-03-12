@@ -29,7 +29,6 @@ function App() {
           resolve(
             <Card
               key={data.id}
-              imageUrl={data.url}
               name={data.breeds[0].name}
               image={image}
             />
